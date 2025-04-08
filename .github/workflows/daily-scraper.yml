@@ -25,10 +25,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install pymongo requests beautifulsoup4 python-dateutil python-dotenv
         
-    - name: Run scraper
+    - name: Run scraper and update database
       env:
         MONGO_URL: ${{ secrets.MONGO_URL }}
         DB_NAME: ${{ secrets.DB_NAME }}
         COLLECTION_NAME: ${{ secrets.COLLECTION_NAME }}
       run: |
+        python fundsforngos_scraper.py
         python update_database.py
