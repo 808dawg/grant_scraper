@@ -22,20 +22,35 @@ def update_mongodb():
         DB_NAME = os.getenv("DB_NAME", "grants")
         COLLECTION_NAME = os.getenv("COLLECTION_NAME", "grantwise.grants")
         
-        # Connect to MongoDB
-        client = pymongo.MongoClient(MONGO_URI)
+        logging.info(f"Connecting to MongoDB database: {DB_NAME}")
+        
+        # Connect to MongoDB with explicit timeout settings
+        client = pymongo.MongoClient(
+            MONGO_URI,
+            serverSelectionTimeoutMS=5000,
+            connectTimeoutMS=5000
+        )
+        
+        # Test connection
+        client.admin.command('ping')
+        logging.info("MongoDB connection successful")
+        
         db = client[DB_NAME]
         
         # Parse the collection name correctly
         if "." in COLLECTION_NAME:
             db_name, coll_name = COLLECTION_NAME.split(".", 1)
             collection = client[db_name][coll_name]
+            logging.info(f"Using collection: {db_name}.{coll_name}")
         else:
             collection = db[COLLECTION_NAME]
+            logging.info(f"Using collection: {DB_NAME}.{COLLECTION_NAME}")
         
         # Load the latest grants data
         with open('grants.json', 'r', encoding='utf-8') as f:
             grants = json.load(f)
+        
+        logging.info(f"Loaded {len(grants)} grants from grants.json")
         
         # Track new grants
         existing_titles = set(doc['title'] for doc in collection.find({}, {'title': 1}))
@@ -70,8 +85,12 @@ def update_mongodb():
                 logging.info(f"- {grant['title']}")
         
         return True
+    except pymongo.errors.ConnectionFailure as e:
+        logging.error(f"Failed to connect to MongoDB: {str(e)}")
+        return False
     except Exception as e:
         logging.error(f"Error updating MongoDB: {str(e)}")
+        logging.error(f"Error type: {type(e).__name__}")
         return False
 
 if __name__ == "__main__":
