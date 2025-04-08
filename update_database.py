@@ -18,15 +18,15 @@ def update_mongodb():
     """Update MongoDB with the latest grants data"""
     try:
         # MongoDB connection details from environment variables
-        MONGO_URI = os.getenv("MONGO_URL", "mongodb+srv://808dawg:yxSiefIdmoNQoLCK@grantwise.44gsq.mongodb.net/grantwise?retryWrites=true&w=majority")
-        DB_NAME = os.getenv("DB_NAME", "grants")
-        COLLECTION_NAME = os.getenv("COLLECTION_NAME", "grantwise.grants")
+        MONGO_URL = os.getenv("MONGO_URL", "mongodb+srv://808dawg:yxSiefIdmoNQoLCK@grantwise.44gsq.mongodb.net/grantwise?retryWrites=true&w=majority")
+        DB_NAME = os.getenv("DB_NAME", "grantwise")  # Changed from 'grants' to 'grantwise'
+        COLLECTION_NAME = os.getenv("COLLECTION_NAME", "grants")  # Changed from 'grantwise.grants' to 'grants'
         
         logging.info(f"Connecting to MongoDB database: {DB_NAME}")
         
         # Connect to MongoDB with explicit timeout settings
         client = pymongo.MongoClient(
-            MONGO_URI,
+            MONGO_URL,
             serverSelectionTimeoutMS=5000,
             connectTimeoutMS=5000
         )
@@ -36,15 +36,8 @@ def update_mongodb():
         logging.info("MongoDB connection successful")
         
         db = client[DB_NAME]
-        
-        # Parse the collection name correctly
-        if "." in COLLECTION_NAME:
-            db_name, coll_name = COLLECTION_NAME.split(".", 1)
-            collection = client[db_name][coll_name]
-            logging.info(f"Using collection: {db_name}.{coll_name}")
-        else:
-            collection = db[COLLECTION_NAME]
-            logging.info(f"Using collection: {DB_NAME}.{COLLECTION_NAME}")
+        collection = db[COLLECTION_NAME]  # Simplified collection access
+        logging.info(f"Using collection: {DB_NAME}.{COLLECTION_NAME}")
         
         # Load the latest grants data
         with open('grants.json', 'r', encoding='utf-8') as f:
