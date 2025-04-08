@@ -18,7 +18,7 @@ def update_mongodb():
     """Update MongoDB with the latest grants data"""
     try:
         # MongoDB connection details from environment variables
-        MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://808dawg:yxSiefIdmoNQoLCK@grantwise.44gsq.mongodb.net/grantwise?retryWrites=true&w=majority")
+        MONGO_URI = os.getenv("MONGO_URL", "mongodb+srv://808dawg:yxSiefIdmoNQoLCK@grantwise.44gsq.mongodb.net/grantwise?retryWrites=true&w=majority")
         DB_NAME = os.getenv("DB_NAME", "grants")
         COLLECTION_NAME = os.getenv("COLLECTION_NAME", "grantwise.grants")
         
