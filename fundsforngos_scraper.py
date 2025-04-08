@@ -253,30 +253,24 @@ output_path = 'grants.json'  # Changed to relative path
 existing_grants = []
 existing_grant_urls = set()
 try:
-    import os
-    # Ensure directory exists before trying to read
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    with open(output_path, 'r', encoding='utf-8') as f:
-        existing_grants = json.load(f)
-        if isinstance(existing_grants, list):
-            for grant in existing_grants:
-                if isinstance(grant, dict) and 'applicationUrl' in grant:
-                    existing_grant_urls.add(grant['applicationUrl'])
-            logging.info(f"Loaded {len(existing_grants)} existing grants from {output_path}")
-        else:
-            logging.warning(f"Existing file {output_path} does not contain a valid JSON list. Starting fresh.")
-            existing_grants = [] # Reset if format is wrong
-except FileNotFoundError:
-    logging.info(f"Initializing new output file {output_path}")
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    with open(output_path, 'w') as f:
-        json.dump([], f)
-    existing_grants = []
-except json.JSONDecodeError:
-    logging.error(f"Error decoding JSON from {output_path}. Starting fresh.")
-    existing_grants = []
+    # Remove the makedirs call since we're using a file in the current directory
+    if os.path.exists(output_path):
+        with open(output_path, 'r', encoding='utf-8') as f:
+            existing_grants = json.load(f)
+            if isinstance(existing_grants, list):
+                for grant in existing_grants:
+                    if isinstance(grant, dict) and 'applicationUrl' in grant:
+                        existing_grant_urls.add(grant['applicationUrl'])
+                logging.info(f"Loaded {len(existing_grants)} existing grants from {output_path}")
+            else:
+                logging.warning(f"Existing file {output_path} does not contain a valid JSON list. Starting fresh.")
+                existing_grants = []
+    else:
+        logging.info(f"Initializing new output file {output_path}")
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump([], f)
 except Exception as e:
-    logging.error(f"Unexpected error loading existing grants: {e}")
+    logging.error(f"Error loading existing grants: {str(e)}")
     existing_grants = []
 
 # Initialize grants list with existing data
