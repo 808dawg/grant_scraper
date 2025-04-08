@@ -240,14 +240,14 @@ def extract_amount(text):
 
 
 # Change the output path to use grants.json in the current directory
+# Change from absolute Windows path to relative path
 base_url = "https://www2.fundsforngos.org/tag/funding-opportunities-and-resources-in-kenya/page/{}/"
-# Hardcoded to April 2nd 2025 per user requirements
-from datetime import date
-deadline_cutoff = date(2025, 4, 2)  # Year, Month, Day fixed values
+deadline_cutoff = date(2025, 4, 2)
 logging.info(f"CONFIRMED CUTOFF: {deadline_cutoff.strftime('%d-%b-%Y')}")
-output_path = 'c:\\Users\\doug\\Documents\\Cline\\grant_scraper\\grants.json'  # Fixed variable name
+output_path = 'grants.json'  # Changed to relative path
+
 # Remove this line that's overriding the output_path
-# output_path = 'grantsource/grantopportunities.json' # Define output path earlier
+# output_path = 'grantsource/grantopportunities.json'
 
 # --- Load existing grants ---
 existing_grants = []
